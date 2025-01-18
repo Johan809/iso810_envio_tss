@@ -91,8 +91,9 @@
             // 
             // ddlPeriodoMes
             // 
+            ddlPeriodoMes.DropDownStyle = ComboBoxStyle.DropDownList;
             ddlPeriodoMes.FormattingEnabled = true;
-            ddlPeriodoMes.Items.AddRange(new object[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
+            ddlPeriodoMes.Items.AddRange(new object[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" });
             ddlPeriodoMes.Location = new Point(307, 186);
             ddlPeriodoMes.Name = "ddlPeriodoMes";
             ddlPeriodoMes.Size = new Size(158, 38);
@@ -100,6 +101,7 @@
             // 
             // ddlPeriodoAno
             // 
+            ddlPeriodoAno.DropDownStyle = ComboBoxStyle.DropDownList;
             ddlPeriodoAno.FormattingEnabled = true;
             ddlPeriodoAno.Items.AddRange(new object[] { "2024", "2025" });
             ddlPeriodoAno.Location = new Point(499, 186);
@@ -162,7 +164,7 @@
             Controls.Add(groupBox1);
             Controls.Add(btnGenerarArchivo);
             Name = "Form1";
-            Text = "Form1";
+            Text = "Generar Archivo TSS";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             groupBox1.ResumeLayout(false);
             groupBox2.ResumeLayout(false);

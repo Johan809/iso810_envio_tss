@@ -4,7 +4,6 @@ namespace iso810_asignacion2
 {
     public partial class Form1 : Form
     {
-        //TO-DO: hacer que el gridview funcione y kcy
         private ArchivoTSS ArchivoTSS { get; set; }
         private List<Empleado> Empleados { get; set; }
 
@@ -12,9 +11,9 @@ namespace iso810_asignacion2
         {
             InitializeComponent();
             ArchivoTSS = new ArchivoTSS();
-            Empleados = new List<Empleado>();
+            Empleados = [.. Empleado.GetEmpleados()];
             dtpFechaTransmicion.Value = DateTime.Now;
-            SetGridView();
+            dataGridView1.DataSource = Empleados;
             ConfigurarEncabezados();
         }
 
@@ -51,12 +50,6 @@ namespace iso810_asignacion2
                 dataGridView1.Columns["Estado"].HeaderText = "Estado";
         }
 
-
-        private void SetGridView()
-        {
-            dataGridView1.DataSource = Empleados;
-        }
-
         private void txtRncEmpresa_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)8)
@@ -76,7 +69,65 @@ namespace iso810_asignacion2
 
         private void btnGenerarArchivo_Click(object sender, EventArgs e)
         {
-            //aqui se supone que debo crear el archivo xd
+            if (!Validar())
+                return;
+            try
+            {
+                CrearObjTSS();
+                if (!ArchivoTSS.EsValido())
+                {
+                    MessageBox.Show("El archivo de no pudo ser generado correctamente.");
+                    return;
+                }
+
+                //fijo por ahora
+                string directorio = @"C:\Users\Johan\Documents\Github\iso810_asignacion2\Files";
+                if (!Directory.Exists(directorio))
+                    Directory.CreateDirectory(directorio);
+
+                string sufijoUnico = Guid.NewGuid().ToString().Substring(0, 8);
+                string rutaArchivo = Path.Combine(directorio, $"autodeterminacion_tss_{sufijoUnico}.txt");
+
+                File.WriteAllText(rutaArchivo, ArchivoTSS.GenerarArchivo());
+                MessageBox.Show($"Archivo generado exitosamente en: {rutaArchivo}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocurrió un error al generar el archivo: {ex.Message}");
+            }
+        }
+
+        private void CrearObjTSS()
+        {
+            ArchivoTSS = new ArchivoTSS
+            {
+                Encabezado = new Encabezado()
+                {
+                    RncEmpresa = txtRnc.Text,
+                    FechaTransmision = dtpFechaTransmicion.Value,
+                    PeriodoCotizable = $"{ddlPeriodoMes.SelectedItem}/{ddlPeriodoAno.SelectedItem}"
+                },
+                Detalles = Empleados,
+                Sumario = new Sumario()
+                {
+                    CantidadRegistros = Empleados.Count,
+                }
+            };
+        }
+
+        private bool Validar()
+        {
+            if (string.IsNullOrEmpty(txtRnc.Text) || txtRnc.Text.Length < 9)
+            {
+                MessageBox.Show("Debe ingresar un RNC válido");
+                return false;
+            }
+            if (ddlPeriodoMes.SelectedItem == null || ddlPeriodoAno.SelectedItem == null)
+            {
+                MessageBox.Show("Para el Periodo debe seleccionar un mes y año válidos");
+                return false;
+            }
+            return true;
         }
     }
 }

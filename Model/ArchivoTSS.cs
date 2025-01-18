@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace iso810_asignacion2.Model
 {
@@ -14,15 +10,48 @@ namespace iso810_asignacion2.Model
 
         public ArchivoTSS()
         {
-            Encabezado = new Encabezado();
             Detalles = new List<Empleado>();
-            Sumario = new Sumario();
+        }
+
+        public bool EsValido()
+        {
+            return Encabezado != null && Sumario != null && Detalles.Count > 0;
         }
 
         public string GenerarArchivo()
         {
-            // Lógica para formatear y construir el archivo en texto plano.
-            return string.Empty;
+            StringBuilder strBuilder = new();
+            if (!EsValido())
+                return string.Empty;
+
+            // Generar Encabezado
+            string rncFormateado = Encabezado.RncEmpresa.PadLeft(11, '0');
+            string fechaTransmisionFormateada = Encabezado.FechaTransmision.ToString("dd/MM/yyyy");
+            string encabezado = $"{Encabezado.TipoRegistro},{rncFormateado},{fechaTransmisionFormateada},{Encabezado.PeriodoCotizable}";
+            strBuilder.AppendLine(encabezado);
+
+            // Generar Detalles
+            foreach (var empleado in Detalles)
+            {
+                string detalle =
+                    $"{empleado.TipoRegistro}," +
+                    $"{empleado.Nss.PadLeft(12, '0')}," +
+                    $"{empleado.Cedula.PadLeft(9, '0')}," +
+                    $"{empleado.Nombres}," +
+                    $"{empleado.Apellidos}," +
+                    $"{empleado.SueldoMensual:F2}," +
+                    $"{empleado.MontoCotizable:F2}," +
+                    $"{empleado.FechaIngreso:dd/MM/yyyy}," +
+                    $"{empleado.TipoContrato}," +
+                    $"{empleado.Estado}";
+
+                strBuilder.AppendLine(detalle);
+            }
+
+            //Sumario
+            strBuilder.AppendLine($"{Sumario.TipoRegistro},{Sumario.CantidadRegistros}");
+
+            return strBuilder.ToString();
         }
     }
 }
