@@ -6,13 +6,14 @@ namespace iso810_asignacion2
     {
         private ArchivoTSS ArchivoTSS { get; set; }
         private List<Empleado> Empleados { get; set; }
+        private const string RUTA_ARCHIVO = @"C:\Users\Johan\Documents\Github\iso810_asignacion2\files";
 
         public Form1()
         {
             InitializeComponent();
             ArchivoTSS = new ArchivoTSS();
-            Empleados = [.. Empleado.GetEmpleados()];
             dtpFechaTransmicion.Value = DateTime.Now;
+            Empleados = [.. Empleado.GetEmpleados()];
             dataGridView1.DataSource = Empleados;
             ConfigurarEncabezados();
         }
@@ -81,12 +82,11 @@ namespace iso810_asignacion2
                 }
 
                 //fijo por ahora
-                string directorio = @"C:\Users\Johan\Documents\Github\iso810_asignacion2\Files";
-                if (!Directory.Exists(directorio))
-                    Directory.CreateDirectory(directorio);
+                if (!Directory.Exists(RUTA_ARCHIVO))
+                    Directory.CreateDirectory(RUTA_ARCHIVO);
 
                 string sufijoUnico = Guid.NewGuid().ToString().Substring(0, 8);
-                string rutaArchivo = Path.Combine(directorio, $"autodeterminacion_tss_{sufijoUnico}.txt");
+                string rutaArchivo = Path.Combine(RUTA_ARCHIVO, $"autodeterminacion_tss_{sufijoUnico}.txt");
 
                 File.WriteAllText(rutaArchivo, ArchivoTSS.GenerarArchivo());
                 MessageBox.Show($"Archivo generado exitosamente en: {rutaArchivo}");
